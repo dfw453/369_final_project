@@ -14,7 +14,7 @@ screen = py.display.set_mode((FrameWidth,
                               FrameHeight)) 
   
 # IMAGE 
-bg = py.image.load("369_background_new.jpg").convert() 
+bg = py.image.load("369_background_new.png").convert() 
   
 # DEFINING MAIN VARIABLES IN SCROLLING 
 scroll = 0

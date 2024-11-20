@@ -36,7 +36,7 @@ y = np.array(up_labels + down_labels)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Train a simple SVM classifier
-clf = SVC(kernel='linear', probability=True)
+clf = SVC(kernel = 'sigmoid', probability=True)
 clf.fit(X_train, y_train)
 
 # Evaluate the model

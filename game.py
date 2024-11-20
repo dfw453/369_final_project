@@ -17,7 +17,7 @@ GRAY = (200, 200, 200)
 BLUE = (0, 30, 209)
 
 # Background Properties
-bg = pygame.image.load("369_background_new.png").convert()
+bg = pygame.image.load("369_background_new.jpg").convert()
 bg = pygame.transform.scale(bg, (WIDTH,HEIGHT))
 bg_x1 = 0
 bg_x2 = WIDTH

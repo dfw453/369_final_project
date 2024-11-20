@@ -81,7 +81,7 @@ obstacle_imgs = []
 obstacle_img1 = pygame.image.load('pylon_cropped_40height.png')
 obstacle_img1 = pygame.transform.scale(obstacle_img1, (40,80))
 obstacle_imgs.append(obstacle_img1)
-obstacle_img2 = pygame.image.load('waterbottle_cropped_50pixelwidth.png')
+obstacle_img2 = pygame.image.load('waterbottle_thicker_outline.png')
 obstacle_img2 = pygame.transform.scale(obstacle_img2, (40,50))
 obstacle_img2 = pygame.transform.rotate(obstacle_img2, 130)
 obstacle_imgs.append(obstacle_img2)

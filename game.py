@@ -14,7 +14,7 @@ pygame.display.set_caption("Google Dinosaur Game")
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
-
+BLUE = (0, 30, 209)
 # Background Properties
 bg = pygame.image.load("369_background_new.png").convert()
 bg = pygame.transform.scale(bg, (WIDTH,HEIGHT))
@@ -89,11 +89,8 @@ class Obstacle:
         screen.blit(self.image, (self.x, self.y))
 
 
-def draw_obstacle(x, y):
-    screen.blit(obstacle, x, y)
-
 def draw_score(score):
-    text = font.render(f"Score: {score}", True, BLACK)
+    text = font.render(f"Score: {score}", True, BLUE)
     screen.blit(text, (10, 10))
 
 def draw_background():

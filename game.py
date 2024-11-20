@@ -78,9 +78,12 @@ class Dinosaur:
 # Obstacle properties
 obstacle_speed = 10
 obstacle_imgs = []
-obstacle_img1 = pygame.image.load('obstacle.png')
+obstacle_img1 = pygame.image.load('pylon_cropped_40height.png')
 obstacle_img1 = pygame.transform.scale(obstacle_img1, (40,80))
 obstacle_imgs.append(obstacle_img1)
+obstacle_img2 = pygame.image.load('waterbottle_cropped_50pixelwidth.png')
+obstacle_img2 = pygame.transform.scale(obstacle_img2, (20,40))
+obstacle_imgs.append(obstacle_img2)
 
 class Obstacle:
     def __init__(self,obstacle_img):
@@ -88,14 +91,20 @@ class Obstacle:
         self.x = WIDTH
         self.y = ground_y - self.image.get_height()
         self.speed = obstacle_speed
+        self.reset = False
 
     def move(self):
         self.x -= self.speed
-        if self.x < -self.image.get_width():
-            self.x = WIDTH + random.randint(200, 800)  # Randomize obstacle spacing
+
+    def set_x(self):
+        self.x = WIDTH + random.randint(200, 800)  # Randomize obstacle spacing
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
+
+    def set_height(self, height):
+        self.y = height
+
 
 
 def draw_score(score):
@@ -120,17 +129,29 @@ def draw_background():
     screen.blit(bg, (bg_x2, 0))
 
 
-# Main game loop
+# Object creation for player and obstacles
 dinosaur = Dinosaur()
-# obstacles = [Obstacle(i) for i in obstacle_imgs]
-obstacle = Obstacle(obstacle_img1)
+obstacles = [Obstacle(i) for i in obstacle_imgs]
+obstacles[1].set_height(100)
+
+
 # Score
 score = 0
 font = pygame.font.Font(None, 36)
 running = True 
+# Obstacle Speed settings
 speed_update = True
 max_speed = 50
+def select_obstacle():
+    current_obstacle = random.choice(obstacles)
+    return current_obstacle
 
+def reset_obstacle(obstacle):
+    if obstacle.x < -obstacle.image.get_width():
+        obstacle.set_x()
+        obstacle = select_obstacle()
+    return obstacle
+current_obstacle = select_obstacle()
 while running:
     screen.fill(WHITE)
 
@@ -145,36 +166,29 @@ while running:
     dinosaur.move()
 
     # Obstacle movement
-    obstacle.move()
-
+    current_obstacle.move()
+    current_obstacle = reset_obstacle(current_obstacle)
     # Speed up obstacle as game progresses further (10% obstacle speed boost every 5 pts)
-    
-    # if obstacle.speed < max_speed:
-    #     for obstacle in obstacles:
-    #         if speed_update and score % 100 == 0 and score != 0:
-    #             obstacle.speed *= 1.1
-    #     speed_update = False
-    #     if score % 100 != 0:
-    #         speed_update = True
-
-    if obstacle.speed < max_speed:
-        if speed_update and score % 100 == 0 and score != 0:
-            obstacle.speed *= 1.1
-            speed_update = False
-        elif score % 100 != 0:
+    if current_obstacle.speed < max_speed:
+        for obstacle in obstacles:
+            if speed_update and score % 100 == 0 and score != 0:
+                obstacle.speed *= 1.1
+        speed_update = False
+        if score % 100 != 0:
             speed_update = True
 
     # Collision detection
     dino_rect = pygame.Rect(dinosaur.x, dinosaur.y, dinosaur.image.get_width(), dinosaur.image.get_height())
-    obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
-    if dino_rect.colliderect(obs_rect):
-        print('Game Over!')
-        running = False
+    for obstacle in obstacles:
+        obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
+        if dino_rect.colliderect(obs_rect):
+            print('Game Over!')
+            running = False
 
     # Drawing everything
     draw_background()
     dinosaur.draw()
-    obstacle.draw()
+    current_obstacle.draw()
     score += 1
     draw_score(score)
 

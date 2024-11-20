@@ -21,7 +21,7 @@ bg = pygame.image.load("369_background_new.png").convert()
 bg = pygame.transform.scale(bg, (WIDTH,HEIGHT))
 bg_x1 = 0
 bg_x2 = WIDTH
-scroll_speed = 5
+scroll_speed = 10
 
 # Clock for controlling the frame rate
 clock = pygame.time.Clock()
@@ -82,7 +82,8 @@ obstacle_img1 = pygame.image.load('pylon_cropped_40height.png')
 obstacle_img1 = pygame.transform.scale(obstacle_img1, (40,80))
 obstacle_imgs.append(obstacle_img1)
 obstacle_img2 = pygame.image.load('waterbottle_cropped_50pixelwidth.png')
-obstacle_img2 = pygame.transform.scale(obstacle_img2, (20,40))
+obstacle_img2 = pygame.transform.scale(obstacle_img2, (40,50))
+obstacle_img2 = pygame.transform.rotate(obstacle_img2, 130)
 obstacle_imgs.append(obstacle_img2)
 
 class Obstacle:
@@ -97,7 +98,7 @@ class Obstacle:
         self.x -= self.speed
 
     def set_x(self):
-        self.x = WIDTH + random.randint(200, 800)  # Randomize obstacle spacing
+        self.x = WIDTH + random.randint(50, 100)  # Randomize obstacle spacing
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
@@ -132,7 +133,7 @@ def draw_background():
 # Object creation for player and obstacles
 dinosaur = Dinosaur()
 obstacles = [Obstacle(i) for i in obstacle_imgs]
-obstacles[1].set_height(100)
+obstacles[1].set_height(random.randint(200,300))
 
 
 # Score
@@ -141,9 +142,12 @@ font = pygame.font.Font(None, 36)
 running = True 
 # Obstacle Speed settings
 speed_update = True
-max_speed = 50
+max_speed = 30
+
 def select_obstacle():
     current_obstacle = random.choice(obstacles)
+    if current_obstacle == obstacles[1]:
+        current_obstacle.set_height(random.randint(200,300))
     return current_obstacle
 
 def reset_obstacle(obstacle):
@@ -151,7 +155,9 @@ def reset_obstacle(obstacle):
         obstacle.set_x()
         obstacle = select_obstacle()
     return obstacle
+
 current_obstacle = select_obstacle()
+
 while running:
     screen.fill(WHITE)
 
@@ -171,10 +177,11 @@ while running:
     # Speed up obstacle as game progresses further (10% obstacle speed boost every 5 pts)
     if current_obstacle.speed < max_speed:
         for obstacle in obstacles:
-            if speed_update and score % 100 == 0 and score != 0:
+            if speed_update and score % 200 == 0 and score != 0:
                 obstacle.speed *= 1.1
+        scroll_speed = current_obstacle.speed
         speed_update = False
-        if score % 100 != 0:
+        if score % 200 != 0:
             speed_update = True
 
     # Collision detection

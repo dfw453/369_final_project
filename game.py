@@ -30,7 +30,7 @@ FPS = 30
 # Dinosaur properties
 player_img1 = pygame.image.load('ref_running.png')
 player_img1 = pygame.transform.scale(player_img1, (100, 100))
-player_img2 = pygame.image.load('ref_running_again.png')
+player_img2 = pygame.image.load('ref_again.png')
 player_img2 = pygame.transform.scale(player_img2, (100,100))
 ground_y = HEIGHT - 30
 jump_power = -20

@@ -95,7 +95,7 @@ def classify_image(image_path):
     img = cv2.GaussianBlur(img, (5, 5), 0)
     img = cv2.Canny(img, 100, 200)
     img_flatten = img.flatten().reshape(1, -1)
-    prediction = adaboost.predict(img_flatten)
+    prediction = clf.predict(img_flatten)
     if prediction == 1:
         return 'Pointing up'
     elif prediction == 2:
@@ -116,14 +116,22 @@ for item in os.listdir(test_image_path):
 #     frame = cv2.Canny(frame, 100, 200)  # Edge detection
 #     return frame.flatten()  # Flatten to 1D array for prediction
 
-# cap = cv2.VideoCapture(1)
+# # camera_index = 0 # default webcam
+# camera_index = 1 # external webcam
+# cap = cv2.VideoCapture(camera_index)
 # frame_count = 0
 # while True:
 #     ret, frame = cap.read()
 #     cv2.imshow('Recording Video', frame)
-#     frame_filename = os.path.join(down_folder, f'frame_ {frame_count:04d}.jpg')
-#     cv2.imwrite(frame_filename, frame)
-#     frame_count += 1
+#     preprocessed = preprocess_frame(frame)
+#     prediction = mlp.predict([preprocessed])
+#     print(prediction)
+#     # folder_name = up_folder
+#     # # folder_name = down_folder
+#     # # folder_name = neutral_folder
+#     # frame_filename = os.path.join(folder_name, f'frame_ {frame_count:04d}.jpg')
+#     # cv2.imwrite(frame_filename, frame)
+#     # frame_count += 1
 #     if cv2.waitKey(1) & 0xFF == ord('q'):
 #         break
 # cap.release()

@@ -1,7 +1,6 @@
 import pygame
 import random
 import sys
-import pickle
 import mediapipe as mp
 import cv2
 
@@ -127,7 +126,7 @@ class Obstacle:
         self.x -= self.speed
 
     def set_x(self):
-        self.x = WIDTH + random.randint(50, 100)  # Randomize obstacle spacing
+        self.x = WIDTH + random.randint(200, 400)  # Randomize obstacle spacing
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
@@ -230,13 +229,13 @@ while running:
         if score % 200 != 0:
             speed_update = True
 
-    # # Collision detection
-    # dino_rect = pygame.Rect(dinosaur.x, dinosaur.y, dinosaur.image.get_width(), dinosaur.image.get_height())
-    # for obstacle in obstacles:
-    #     obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
-    #     if dino_rect.colliderect(obs_rect):
-    #         print('Game Over!')
-    #         running = False
+    # Collision detection
+    dino_rect = pygame.Rect(dinosaur.x, dinosaur.y, dinosaur.image.get_width(), dinosaur.image.get_height())
+    for obstacle in obstacles:
+        obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
+        if dino_rect.colliderect(obs_rect):
+            print('Game Over!')
+            running = False
 
     # Drawing everything
     draw_background()

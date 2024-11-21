@@ -30,13 +30,14 @@ down_images, down_labels = load_images(down_folder, 0)  # Label '0' for pointing
 
 # Combine datasets
 X = np.array(up_images + down_images)
+print(X)
 y = np.array(up_labels + down_labels)
 
 # Split into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Train a simple SVM classifier
-clf = SVC(kernel = 'sigmoid', probability=True)
+clf = SVC(kernel = 'linear', probability=True)
 clf.fit(X_train, y_train)
 
 # Evaluate the model

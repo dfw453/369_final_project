@@ -175,7 +175,7 @@ max_speed = 30
 def select_obstacle():
     current_obstacle = random.choice(obstacles)
     if current_obstacle == obstacles[1]:
-        current_obstacle.set_height(random.randint(200,300))
+        current_obstacle.set_height(random.randint(250,300))
     return current_obstacle
 
 def reset_obstacle(obstacle):
@@ -198,9 +198,6 @@ while running:
     if not ret:
         print('Error accessing camera')
         break
-    
-    # Flip the frame horizontally for a later selfie-view display
-    frame = cv2.flip(frame, 1)
 
     # Convert the image to RGB for MediaPipe
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

@@ -2,20 +2,32 @@ import pygame
 import random
 import sys
 import pickle
+import mediapipe as mp
 import cv2
 
 # Adding model from opencv
-with open('pointing_detection.pkl', 'rb') as f:
-    clf = pickle.load(f)
+# Initialize MediaPipe Hands module
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(min_detection_confidence=0.7, min_tracking_confidence=0.5)
 
-def preprocess_frame(frame):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-    frame = cv2.resize(frame, (64, 64))  # Resize to 64x64
-    frame = cv2.GaussianBlur(frame, (5, 5), 0)  # Blur to reduce noise
-    frame = cv2.Canny(frame, 100, 200)  # Edge detection
-    return frame.flatten()  # Flatten to 1D array for prediction
+# camera_index = 0 # Default webcam
+camera_index = 1 # External Webcam
+cap = cv2.VideoCapture(camera_index)
 
-cap = cv2.VideoCapture(1)
+def process_results(results):
+    if results.multi_hand_landmarks:
+        for landmarks in results.multi_hand_landmarks:
+            # Get the coordinates for wrist (landmark 0) and middle finger (landmark 12, 9, etc.)
+            wrist = landmarks.landmark[mp_hands.HandLandmark.WRIST]
+            middle_finger_tip = landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
+
+            # Check the relative position of wrist and middle finger to classify the pointing direction
+            if middle_finger_tip.y < wrist.y:  # Middle finger tip is above wrist, pointing up
+                return 1
+            else:  # Middle finger tip is below wrist, pointing down
+                return 2
+            # Display the detected gesture on the frame
+    return 0
 
 # Initialize Pygame
 pygame.init()
@@ -40,7 +52,7 @@ scroll_speed = 10
 
 # Clock for controlling the frame rate
 clock = pygame.time.Clock()
-FPS = 30
+FPS = 60
 
 # Dinosaur properties
 player_img1 = pygame.image.load('ref_running.png')
@@ -93,9 +105,11 @@ class Dinosaur:
 # Obstacle properties
 obstacle_speed = 10
 obstacle_imgs = []
+#Load first obstacle
 obstacle_img1 = pygame.image.load('pylon_cropped_40height.png')
 obstacle_img1 = pygame.transform.scale(obstacle_img1, (40,80))
 obstacle_imgs.append(obstacle_img1)
+#Load second obstacle
 obstacle_img2 = pygame.image.load('waterbottle_thicker_outline.png')
 obstacle_img2 = pygame.transform.scale(obstacle_img2, (40,50))
 obstacle_img2 = pygame.transform.rotate(obstacle_img2, 130)
@@ -172,7 +186,7 @@ def reset_obstacle(obstacle):
     return obstacle
 
 current_obstacle = select_obstacle()
-
+predictions = []
 while running:
     screen.fill(WHITE)
 
@@ -185,18 +199,27 @@ while running:
     if not ret:
         print('Error accessing camera')
         break
+    
+    # Flip the frame horizontally for a later selfie-view display
+    frame = cv2.flip(frame, 1)
 
-    preprocessed = preprocess_frame(frame)
-    prediction = clf.predict([preprocessed])
+    # Convert the image to RGB for MediaPipe
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Process the frame and get the hand landmarks
+    results = hands.process(rgb_frame)
+    prediction = process_results(results)
+    print(prediction)
     if prediction == 1:
         dinosaur.jump()
-    elif prediction == 0:
+    elif prediction == 2:
         dinosaur.fall()
     dinosaur.move()
 
     # Obstacle movement
     current_obstacle.move()
     current_obstacle = reset_obstacle(current_obstacle)
+
     # Speed up obstacle as game progresses further (10% obstacle speed boost every 5 pts)
     if current_obstacle.speed < max_speed:
         for obstacle in obstacles:
@@ -207,13 +230,13 @@ while running:
         if score % 200 != 0:
             speed_update = True
 
-    # Collision detection
-    dino_rect = pygame.Rect(dinosaur.x, dinosaur.y, dinosaur.image.get_width(), dinosaur.image.get_height())
-    for obstacle in obstacles:
-        obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
-        if dino_rect.colliderect(obs_rect):
-            print('Game Over!')
-            running = False
+    # # Collision detection
+    # dino_rect = pygame.Rect(dinosaur.x, dinosaur.y, dinosaur.image.get_width(), dinosaur.image.get_height())
+    # for obstacle in obstacles:
+    #     obs_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.image.get_width(), obstacle.image.get_height())
+    #     if dino_rect.colliderect(obs_rect):
+    #         print('Game Over!')
+    #         running = False
 
     # Drawing everything
     draw_background()

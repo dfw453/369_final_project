@@ -9,8 +9,8 @@ import cv2
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(min_detection_confidence=0.7, min_tracking_confidence=0.5)
 
-# camera_index = 0 # Default webcam
-camera_index = 1 # External Webcam
+camera_index = 0 # Default webcam
+# camera_index = 1 # External Webcam
 cap = cv2.VideoCapture(camera_index)
 
 def process_results(results):

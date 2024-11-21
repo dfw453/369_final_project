@@ -9,7 +9,7 @@ hands = mp_hands.Hands(min_detection_confidence=0.7, min_tracking_confidence=0.5
 mp_drawing = mp.solutions.drawing_utils
 
 # Start webcam capture
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -18,7 +18,6 @@ while cap.isOpened():
 
     # Flip the frame horizontally for a later selfie-view display
     frame = cv2.flip(frame, 1)
-    frame = cv2.resize(frame, (1280, 720))
     # Convert the image to RGB for MediaPipe
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 

@@ -1,6 +1,21 @@
 import pygame
 import random
 import sys
+import pickle
+import cv2
+
+# Adding model from opencv
+with open('pointing_detection.pkl', 'rb') as f:
+    clf = pickle.load(f)
+
+def preprocess_frame(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    frame = cv2.resize(frame, (64, 64))  # Resize to 64x64
+    frame = cv2.GaussianBlur(frame, (5, 5), 0)  # Blur to reduce noise
+    frame = cv2.Canny(frame, 100, 200)  # Edge detection
+    return frame.flatten()  # Flatten to 1D array for prediction
+
+cap = cv2.VideoCapture(1)
 
 # Initialize Pygame
 pygame.init()
@@ -17,7 +32,7 @@ GRAY = (200, 200, 200)
 BLUE = (0, 30, 209)
 
 # Background Properties
-bg = pygame.image.load("369_background_new.jpg").convert()
+bg = pygame.image.load("369_background_new.png").convert()
 bg = pygame.transform.scale(bg, (WIDTH,HEIGHT))
 bg_x1 = 0
 bg_x2 = WIDTH
@@ -166,9 +181,17 @@ while running:
             running = False
 
     # Dinosaur jump mechanics
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_SPACE]:
+    ret, frame = cap.read()
+    if not ret:
+        print('Error accessing camera')
+        break
+
+    preprocessed = preprocess_frame(frame)
+    prediction = clf.predict([preprocessed])
+    if prediction == 1:
         dinosaur.jump()
+    elif prediction == 0:
+        dinosaur.fall()
     dinosaur.move()
 
     # Obstacle movement
@@ -203,5 +226,7 @@ while running:
     pygame.display.flip()
     clock.tick(FPS)
 
+cap.release()
+cv2.destroyAllWindows()
 pygame.quit()
 sys.exit()

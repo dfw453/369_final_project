@@ -208,7 +208,6 @@ while running:
     # Process the frame and get the hand landmarks
     results = hands.process(rgb_frame)
     prediction = process_results(results)
-    print(prediction)
     if prediction == 1:
         dinosaur.jump()
     elif prediction == 2:

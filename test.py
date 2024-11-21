@@ -18,7 +18,7 @@ while cap.isOpened():
 
     # Flip the frame horizontally for a later selfie-view display
     frame = cv2.flip(frame, 1)
-
+    frame = cv2.resize(frame, (1280, 720))
     # Convert the image to RGB for MediaPipe
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
